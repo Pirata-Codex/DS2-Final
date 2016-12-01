@@ -1,0 +1,3 @@
+﻿  Source.cpp
+d:\3.visual studio 2015\data structure by dr.davudi\projects\all kinds of sorting\all kinds of sorting\source.cpp(51): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+  All kinds of sorting.vcxproj -> D:\3.Visual Studio 2015\Data Structure by Dr.Davudi\Projects\All kinds of sorting\Debug\All kinds of sorting.exe
