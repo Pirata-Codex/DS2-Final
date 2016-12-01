@@ -19,6 +19,7 @@ using namespace std;
 struct array_
 {
 	unsigned short int * set; //The Array that wants to get sorted
+	unsigned short int * temp_array; //Array should turn back to his first situation after sorting
 	unsigned short int size;
 	
 
@@ -54,6 +55,7 @@ void array_::create_array(unsigned short int size)
 		random = time(NULL) % 10000;
 		set[i] = random;
 	}
+	temp_array = set;
 
 }
 
@@ -64,11 +66,9 @@ void array_::set_size(unsigned short int size_)
 
 void array_::bubble_sorting()
 {
-	srand(time(NULL));
 	unsigned short int temp;
-	unsigned short int * temp_array = set;
 	Bubble_counter = 0;
-	double temp = (double)time(NULL);
+	double temp_time = clock_t();
 	for (unsigned short int i = 1; i < size; i++)
 	{
 		for (unsigned short int j = 1; i < (size - i); i++)
@@ -83,14 +83,35 @@ void array_::bubble_sorting()
 		}
 				
 	}
-	Bubble_time = (double)(time(NULL) - temp);
+	Bubble_time = (double)(clock_t() - temp_time);
 	set = temp_array;
 }
 
 void array_::insertion_sorting()
 {
-
+	unsigned short int tmp;
+	unsigned short int j;
+	Insertion_counter = 0;
+	double temp_time = clock_t();
+	for (unsigned short int i = 1; i < size; i++)
+	{
+		tmp = set[i];
+		Insertion_counter++;
+		j = i - 1;
+		while ((j >= 0) && (set[j] > tmp))
+		{
+			set[j + 1] = set[j];
+			Insertion_counter++;
+			j -= 1;
+		}
+		set[j + 1] = tmp;
+		Insertion_counter++;
+	}
+	Insertion_time = (double)(clock_t() - temp_time);
+	set = temp_array;
 }
+
+
 int main()
 {
 
