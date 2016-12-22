@@ -19,31 +19,38 @@ using namespace std;
 struct array_
 {
 	unsigned short int * set; //The Array that wants to get sorted
-	unsigned short int * temp_array; //Array should turn back to his first situation after sorting
+	unsigned short int * backup; //Array should turn back to his first situation after sorting
 	unsigned short int size;
 	
 
 	//Time that takes to sort the array with these algorithms
 	double Bubble_time;
-	int Bubble_counter;
+	int Bubble_swap;
+	int Bubble_copy;
 
 	double Insertion_time;
-	int Insertion_counter;
+	int Insertion_swap;
+	int Insertion_copy;
+
 
 	double Selection_time;
-	int Selection_counter;
+	int Selection_swap;
+	int Selection_copy;
 
 	double Merge_time;
-	int Merge_counter;
+	int Merge_swap;
+	int Merge_copy;
 
 	double Quick_time;
-	int Quick_counter;
+	int Quick_swap;
+	int Quick_copy;
 
 public:
 	void create_array(unsigned short int);
 	void set_size(unsigned short int);
 	void bubble_sorting();
 	void insertion_sorting();
+	void selection_sorting();
 };
 
 void array_::create_array(unsigned short int size)
@@ -55,19 +62,20 @@ void array_::create_array(unsigned short int size)
 		random = time(NULL) % 10000;
 		set[i] = random;
 	}
-	temp_array = set;
-
+	backup = set;
+	return;
 }
 
 void array_::set_size(unsigned short int size_)
 {
 	size = size_;
+	return;
 }
 
 void array_::bubble_sorting()
 {
 	unsigned short int temp;
-	Bubble_counter = 0;
+	Bubble_swap = Bubble_copy = 0;
 	double temp_time = clock_t();
 	for (unsigned short int i = 1; i < size; i++)
 	{
@@ -76,41 +84,63 @@ void array_::bubble_sorting()
 			if (set[j - 1] > set[j])
 			{
 				temp = set[i - 1];
+				Bubble_copy += 1;
 				set[i] = set[i - 1];
 				set[i - 1] = temp;
-				Bubble_counter += 3;
+				Bubble_swap += 1;
+				
 			}
 		}
 				
 	}
 	Bubble_time = (double)(clock_t() - temp_time);
-	set = temp_array;
+	set = backup;
+	return;
 }
 
 void array_::insertion_sorting()
 {
 	unsigned short int tmp;
 	unsigned short int j;
-	Insertion_counter = 0;
+	Insertion_copy = Insertion_swap = 0;
 	double temp_time = clock_t();
 	for (unsigned short int i = 1; i < size; i++)
 	{
 		tmp = set[i];
-		Insertion_counter++;
+		Insertion_copy++;
 		j = i - 1;
 		while ((j >= 0) && (set[j] > tmp))
 		{
 			set[j + 1] = set[j];
-			Insertion_counter++;
+			Insertion_swap++;
 			j -= 1;
 		}
 		set[j + 1] = tmp;
 		Insertion_counter++;
 	}
 	Insertion_time = (double)(clock_t() - temp_time);
-	set = temp_array;
+	set = backup;
+	return;
 }
 
+void array_::selection_sorting()
+{
+	int i, j, first, temp;
+	int numLength = size;
+	for (i = numLength - 1; i > 0; i--)
+	{
+		first = 0;                 // initialize to subscript of first element
+		for (j = 1; j <= i; j++)   // locate smallest between positions 1 and i.
+		{
+			if (set[j] < set[first])
+				first = j;
+		}
+		temp = set[first];   // Swap smallest found with element in position i.
+		set[first] = set[i];
+		set[i] = temp;
+	}
+	return;
+}
 
 int main()
 {
