@@ -25,29 +25,29 @@ struct array_
 
 	//Time that takes to sort the array with these algorithms
 	double Bubble_time;
-	int Bubble_comp;                      //comp = comparison
-	int Bubble_swap;
+	unsigned int Bubble_comp;                      //comp = comparison
+	unsigned int Bubble_swap;
 
 	double Insertion_time;
-	int Insertion_comp;
-	int Insertion_swap;
+	unsigned int Insertion_comp;
+	unsigned int Insertion_swap;
 
 
 	double Selection_time;
-	int Selection_comp;
-	int Selection_swap;
+	unsigned int Selection_comp;
+	unsigned int Selection_swap;
 
 	double Merge_time;
-	int Merge_comp;
-	int Merge_swap;
+	unsigned int Merge_comp;
+	unsigned int Merge_swap;
 
 	double Quick_time;
-	int Quick_comp;
-	int Quick_swap;
+	unsigned int Quick_comp;
+	unsigned int Quick_swap;
 
 	double Heap_time;
-	int Heap_comp;
-	int Heap_swap;
+	unsigned int Heap_comp;
+	unsigned int Heap_swap;
 
 public:
 	void create_array(unsigned short int);
@@ -62,6 +62,7 @@ public:
 	void max_heapify(unsigned short int *, unsigned short int, unsigned short int);
 	void heapsort(unsigned short int *, unsigned short int);
 	void build_maxheap(unsigned short int *, unsigned short int);
+
 };
 
 void array_::create_array(unsigned short int size)
