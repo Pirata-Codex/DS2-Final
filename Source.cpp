@@ -111,12 +111,10 @@ void array_::insertion_sorting()
 		j = i - 1;
 		while ((j >= 0) && (set[j] > tmp))
 		{
-			set[j + 1] = set[j];
-			Insertion_swap++;
+			set[j + 1] = set[j];	Insertion_swap++;
 			j -= 1;
 		}
 		set[j + 1] = tmp;
-		Insertion_counter++;
 	}
 	Insertion_time = (double)(clock_t() - temp_time);
 	set = backup;
@@ -127,6 +125,7 @@ void array_::selection_sorting()
 {
 	int i, j, first, temp;
 	int numLength = size;
+	Selection_copy = Selection_swap = 0;
 	for (i = numLength - 1; i > 0; i--)
 	{
 		first = 0;                 // initialize to subscript of first element
@@ -135,8 +134,8 @@ void array_::selection_sorting()
 			if (set[j] < set[first])
 				first = j;
 		}
-		temp = set[first];   // Swap smallest found with element in position i.
-		set[first] = set[i];
+		temp = set[first];	     Selection_copy++;  // Swap smallest found with element in position i.
+		set[first] = set[i];	 Selection_swap++;
 		set[i] = temp;
 	}
 	return;
