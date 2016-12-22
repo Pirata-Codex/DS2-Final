@@ -25,33 +25,35 @@ struct array_
 
 	//Time that takes to sort the array with these algorithms
 	double Bubble_time;
+	int Bubble_comp;                      //comp = comparison
 	int Bubble_swap;
-	int Bubble_copy;
 
 	double Insertion_time;
+	int Insertion_comp;
 	int Insertion_swap;
-	int Insertion_copy;
 
 
 	double Selection_time;
+	int Selection_comp;
 	int Selection_swap;
-	int Selection_copy;
 
 	double Merge_time;
+	int Merge_comp;
 	int Merge_swap;
-	int Merge_copy;
 
 	double Quick_time;
+	int Quick_comp;
 	int Quick_swap;
-	int Quick_copy;
 
 	double Heap_time;
+	int Heap_comp;
 	int Heap_swap;
-	int Heap_copy;
 
 public:
 	void create_array(unsigned short int);
 	void set_size(unsigned short int);
+
+	//Sorting algorithms
 	void bubble_sorting();
 	void insertion_sorting();
 	void selection_sorting();
@@ -84,7 +86,7 @@ void array_::set_size(unsigned short int size_)
 void array_::bubble_sorting()
 {
 	unsigned short int temp;
-	Bubble_swap = Bubble_copy = 0;
+	Bubble_comp = Bubble_swap = 0;
 	double temp_time = clock_t();
 	for (unsigned short int i = 1; i < size; i++)
 	{
@@ -92,14 +94,16 @@ void array_::bubble_sorting()
 		{
 			if (set[j - 1] > set[j])
 			{
+				Bubble_comp++;
 				temp = set[i - 1];
-				Bubble_copy += 1;
 				set[i] = set[i - 1];
 				set[i - 1] = temp;
-				Bubble_swap += 1;
+				Bubble_swap++;
 				
 			}
+			Bubble_comp++;
 		}
+		Bubble_comp++;
 				
 	}
 	Bubble_time = (double)(clock_t() - temp_time);
@@ -111,19 +115,20 @@ void array_::insertion_sorting()
 {
 	unsigned short int tmp;
 	unsigned short int j;
-	Insertion_copy = Insertion_swap = 0;
+	Insertion_comp = Insertion_swap = 0;
 	double temp_time = clock_t();
 	for (unsigned short int i = 1; i < size; i++)
 	{
 		tmp = set[i];
-		Insertion_copy++;
 		j = i - 1;
 		while ((j >= 0) && (set[j] > tmp))
 		{
+			Insertion_comp += 2;
 			set[j + 1] = set[j];	Insertion_swap++;
 			j -= 1;
 		}
 		set[j + 1] = tmp;
+		Insertion_comp++;
 	}
 	Insertion_time = (double)(clock_t() - temp_time);
 	set = backup;
@@ -134,7 +139,7 @@ void array_::selection_sorting()
 {
 	unsigned short int first, temp;
 	unsigned short int numLength = size;
-	Selection_copy = Selection_swap = 0;
+	Selection_comp = Selection_swap = 0;
 
 	double temp_time = clock_t();
 	for (unsigned short int i = numLength - 1; i > 0; i--)
@@ -143,11 +148,20 @@ void array_::selection_sorting()
 		for (unsigned short int j = 1; j <= i; j++)   // locate smallest between positions 1 and i.
 		{
 			if (set[j] < set[first])
+			{
+				Selection_comp++;
 				first = j;
+			}
+				
+
+			Selection_comp++;
 		}
-		temp = set[first];	     Selection_copy++;    // Swap smallest found with element in position i.
-		set[first] = set[i];	 Selection_swap++;
+		temp = set[first];	         // Swap smallest found with element in position i.
+		set[first] = set[i];	 
 		set[i] = temp;
+		Selection_swap++;
+
+		Selection_comp++;
 	}
 
 	Selection_time = (clock_t() - temp_time);
@@ -159,7 +173,11 @@ void array_::selection_sorting()
 void array_::build_maxheap(unsigned short int * a, unsigned short int n)
 {
 	for (unsigned short int i = n / 2; i >= 1; i--)
+	{
 		max_heapify(a, i, n);
+		Heap_comp++;
+
+	}
 }
 
 void array_::max_heapify(unsigned short int * a, unsigned short int i, unsigned short int n)
@@ -170,14 +188,26 @@ void array_::max_heapify(unsigned short int * a, unsigned short int i, unsigned 
 	while (j <= n)
 	{
 		if (j < n && a[j + 1] > a[j])
+		{
+			Heap_comp++;
 			j = j + 1;
+		}
+		
 		if (temp > a[j])
+		{
+			Heap_comp++;
 			break;
+		}
+		
 		else if (temp <= a[j])
 		{
+			Heap_comp++;
 			a[j / 2] = a[j];
 			j = 2 * j;
+			Heap_swap++;
 		}
+
+		Heap_comp++;
 	}
 	a[j / 2] = temp;
 	return;
@@ -191,7 +221,10 @@ void array_::heapsort(unsigned short int * a, unsigned short int n)
 		temp = a[i];
 		a[i] = a[1];
 		a[1] = temp;
+		Heap_swap++;
 		max_heapify(a, 1, i - 1);
+		Heap_comp++;
+
 	}
 }
 
