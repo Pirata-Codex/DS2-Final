@@ -45,12 +45,21 @@ struct array_
 	int Quick_swap;
 	int Quick_copy;
 
+	double Heap_time;
+	int Heap_swap;
+	int Heap_copy;
+
 public:
 	void create_array(unsigned short int);
 	void set_size(unsigned short int);
 	void bubble_sorting();
 	void insertion_sorting();
 	void selection_sorting();
+	
+	//Heap sort functions
+	void max_heapify(unsigned short int *, unsigned short int, unsigned short int);
+	void heapsort(unsigned short int *, unsigned short int);
+	void build_maxheap(unsigned short int *, unsigned short int);
 };
 
 void array_::create_array(unsigned short int size)
@@ -123,22 +132,67 @@ void array_::insertion_sorting()
 
 void array_::selection_sorting()
 {
-	int i, j, first, temp;
-	int numLength = size;
+	unsigned short int first, temp;
+	unsigned short int numLength = size;
 	Selection_copy = Selection_swap = 0;
-	for (i = numLength - 1; i > 0; i--)
+
+	double temp_time = clock_t();
+	for (unsigned short int i = numLength - 1; i > 0; i--)
 	{
-		first = 0;                 // initialize to subscript of first element
-		for (j = 1; j <= i; j++)   // locate smallest between positions 1 and i.
+		first = 0;                                    // initialize to subscript of first element
+		for (unsigned short int j = 1; j <= i; j++)   // locate smallest between positions 1 and i.
 		{
 			if (set[j] < set[first])
 				first = j;
 		}
-		temp = set[first];	     Selection_copy++;  // Swap smallest found with element in position i.
+		temp = set[first];	     Selection_copy++;    // Swap smallest found with element in position i.
 		set[first] = set[i];	 Selection_swap++;
 		set[i] = temp;
 	}
+
+	Selection_time = (clock_t() - temp_time);
+	set = backup;
 	return;
+}
+
+//:::::::::::::::::::::::::::::::::::::::::::::::::::::::: HEAP SORT :::::::::::::::::::::::::::::::::::::::::::::::::::::
+void array_::build_maxheap(unsigned short int * a, unsigned short int n)
+{
+	for (unsigned short int i = n / 2; i >= 1; i--)
+		max_heapify(a, i, n);
+}
+
+void array_::max_heapify(unsigned short int * a, unsigned short int i, unsigned short int n)
+{
+	unsigned short int j, temp;
+	temp = a[i];
+	j = 2 * i;
+	while (j <= n)
+	{
+		if (j < n && a[j + 1] > a[j])
+			j = j + 1;
+		if (temp > a[j])
+			break;
+		else if (temp <= a[j])
+		{
+			a[j / 2] = a[j];
+			j = 2 * j;
+		}
+	}
+	a[j / 2] = temp;
+	return;
+}
+
+void array_::heapsort(unsigned short int * a, unsigned short int n)
+{
+	unsigned short int temp;
+	for (unsigned short int i = n; i >= 2; i--)
+	{
+		temp = a[i];
+		a[i] = a[1];
+		a[1] = temp;
+		max_heapify(a, 1, i - 1);
+	}
 }
 
 int main()
