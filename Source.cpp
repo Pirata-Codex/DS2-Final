@@ -39,7 +39,7 @@ struct array_
 
 	double Merge_time;
 	unsigned int Merge_comp;
-	unsigned int Merge_swap;
+	unsigned int Merge_copy;
 
 	double Quick_time;
 	unsigned int Quick_comp;
@@ -62,6 +62,10 @@ public:
 	void max_heapify(unsigned short int *, unsigned short int, unsigned short int);
 	void heapsort(unsigned short int *, unsigned short int);
 	void build_maxheap(unsigned short int *, unsigned short int);
+
+	//Merge sort functions
+	void merge(unsigned short int *, unsigned short int, unsigned short int, unsigned short int);
+	void mergesort(unsigned short int *, unsigned short int, unsigned short int);
 
 };
 
@@ -173,6 +177,7 @@ void array_::selection_sorting()
 //:::::::::::::::::::::::::::::::::::::::::::::::::::::::: HEAP SORT :::::::::::::::::::::::::::::::::::::::::::::::::::::
 void array_::build_maxheap(unsigned short int * a, unsigned short int n)
 {
+	Heap_comp = Heap_swap = 0;
 	for (unsigned short int i = n / 2; i >= 1; i--)
 	{
 		max_heapify(a, i, n);
@@ -217,6 +222,8 @@ void array_::max_heapify(unsigned short int * a, unsigned short int i, unsigned 
 void array_::heapsort(unsigned short int * a, unsigned short int n)
 {
 	unsigned short int temp;
+
+	double temp_time = clock_t();
 	for (unsigned short int i = n; i >= 2; i--)
 	{
 		temp = a[i];
@@ -227,6 +234,105 @@ void array_::heapsort(unsigned short int * a, unsigned short int n)
 		Heap_comp++;
 
 	}
+	Heap_time = (clock_t() - temp_time);
+}
+
+
+
+//:::::::::::::::::::::::::::::::::::::::::::::::::::::::: MERGE SORT :::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+// Merges two subarrays of arr[].
+// First subarray is arr[l..m]
+// Second subarray is arr[m+1..r]
+void array_::merge(unsigned short int * arr, unsigned short int l, unsigned short int m, unsigned short int r)
+{
+	unsigned short int i, j, k;
+	unsigned short int n1 = m - l + 1;
+	unsigned short int n2 = r - m;
+
+	/* create temp arrays */
+	unsigned short int * L, *R;
+	L = new unsigned short int[n1];
+	R = new unsigned short int[n2];
+
+	/* Copy data to temp arrays L[] and R[] */
+	for (i = 0; i < n1; i++)
+	{
+		L[i] = arr[l + i];
+		Merge_copy++;
+		Merge_comp++;
+	}
+		
+	for (j = 0; j < n2; j++)
+	{
+		R[j] = arr[m + 1 + j];
+		Merge_copy++;
+		Merge_comp++;
+	}
+		
+
+	/* Merge the temp arrays back into arr[l..r]*/
+	i = 0; // Initial index of first subarray
+	j = 0; // Initial index of second subarray
+	k = l; // Initial index of merged subarray
+	while (i < n1 && j < n2)
+	{
+		if (L[i] <= R[j])
+		{
+			Merge_comp++;
+			arr[k] = L[i];
+			Merge_copy++;
+			i++;
+		}
+		else
+		{
+			Merge_comp++;
+			arr[k] = R[j];
+			Merge_copy++;
+			j++;
+		}
+		k++;
+		Merge_comp++;
+	}
+
+	/* Copy the remaining elements of L[], if there
+	are any */
+	while (i < n1)
+	{
+		arr[k] = L[i];
+		Merge_copy++;
+		i++;
+		k++;
+	}
+
+	/* Copy the remaining elements of R[], if there
+	are any */
+	while (j < n2)
+	{
+		arr[k] = R[j];
+		Merge_copy++;
+		j++;
+		k++;
+	}
+}
+
+void array_::mergesort(unsigned short int * arr, unsigned short int l, unsigned short int r)
+{
+	Merge_comp = Merge_copy = 0;
+	if (l < r)
+	{
+		Merge_comp++;
+		// Same as (l+r)/2, but avoids overflow for
+		// large l and h
+		unsigned short int m = l + (r - l) / 2;
+
+		// Sort first and second halves
+		mergesort(arr, l, m);
+		mergesort(arr, m + 1, r);
+
+		merge(arr, l, m, r);
+	}
+
 }
 
 int main()
