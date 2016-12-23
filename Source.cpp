@@ -4,7 +4,7 @@
 > Sort kinds: Selection, Insertion, Bubble, Merge, Quick
 > Range of the index amounts is between 0 and 10000
 > Array Sizes starts from 10 to 1000
-> We will use "unsigned short int" to create arrays because the required range is in this kind (uses less storage and less to process)
+> We will use "int" to create arrays because the required range is in this kind (uses less storage and less to process)
 > The purpose of this program is to assign the best sort algorithm for an specific array size 
 
 */
@@ -18,40 +18,51 @@ using namespace std;
 
 struct array_
 {
-	unsigned short int * set; //The Array that wants to get sorted
-	unsigned short int * backup; //Array should turn back to his first situation after sorting
-	unsigned short int size;
+	int * set; //The Array that wants to get sorted
+	int * backup; //Array should turn back to his first situation after sorting
+	int size;
 	
 
 	//Time that takes to sort the array with these algorithms
 	double Bubble_time;
 	unsigned int Bubble_comp;                      //comp = comparison
 	unsigned int Bubble_swap;
+	unsigned int B_Sum;
 
 	double Insertion_time;
 	unsigned int Insertion_comp;
 	unsigned int Insertion_swap;
+	unsigned int I_Sum;
 
 
 	double Selection_time;
 	unsigned int Selection_comp;
 	unsigned int Selection_swap;
+	unsigned int S_Sum;
+
 
 	double Merge_time;
 	unsigned int Merge_comp;
 	unsigned int Merge_copy;
+	unsigned int M_Sum;
+
 
 	double Quick_time;
 	unsigned int Quick_comp;
 	unsigned int Quick_swap;
+	unsigned int Q_Sum;
+
 
 	double Heap_time;
 	unsigned int Heap_comp;
 	unsigned int Heap_swap;
+	unsigned int H_Sum;
+
 
 public:
-	void create_array(unsigned short int);
-	void set_size(unsigned short int);
+	void create_array(int);
+	void set_size(int);
+	void minimum();
 
 	//:::::::::::::::::::::::::::::::::::::::::::::::::::::::: ALGORITHMS :::::::::::::::::::::::::::::::::::::::::::::::::::::
 	void bubble_sorting();
@@ -59,39 +70,42 @@ public:
 	void selection_sorting();
 	
 	//Heap sort functions
-	void max_heapify(unsigned short int *, unsigned short int, unsigned short int);
-	void heapsort(unsigned short int *, unsigned short int);
-	void build_maxheap(unsigned short int *, unsigned short int);
+	void max_heapify(int *, int, int);
+	void heapsort(int *, int);
+	void build_maxheap(int *, int);
 
 	//Merge sort functions
-	void merge(unsigned short int *, unsigned short int, unsigned short int, unsigned short int);
-	void mergesort(unsigned short int *, unsigned short int, unsigned short int);
+	void merge(int *, int, int, int);
+	void mergesort(int *, int, int);
 
 	//Quick sort functions
-	void swap(unsigned short int *, unsigned short int *);
-	int partition(unsigned short int *, unsigned short int , unsigned short int );
-	void quicksort(unsigned short int *, unsigned short int, unsigned short int);
+	void swap(int *, int *);
+	int partition(int *, int , int );
+	void quicksort(int *, int, int);
 	//:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	void sort_array();
 
 };
 
-void array_::create_array(unsigned short int size)
+void array_::create_array(int size)
 {
-	srand(time(NULL));
-	set = new unsigned short int[size];
-	unsigned short int random; //The generated integer will be saved in this
-	for (unsigned short int i = 0; i < size; i++)
+	//srand(time(NULL));
+	set = new int[size];
+	int random; //The generated integer will be saved in this
+	for (int i = 0; i < size; i++)
 	{
-		random = time(NULL) % 10000;
+		random = rand() % 10000;
+		//cout << random << " ,";
 		set[i] = random;
 	}
+
+	backup = new int[size];
 	backup = set;
 	return;
 }
 
-void array_::set_size(unsigned short int size_)
+void array_::set_size(int size_)
 {
 	size = size_;
 	return;
@@ -99,12 +113,12 @@ void array_::set_size(unsigned short int size_)
 
 void array_::bubble_sorting()
 {
-	unsigned short int temp;
+	int temp;
 	Bubble_comp = Bubble_swap = 0;
 	double temp_time = clock_t();
-	for (unsigned short int i = 1; i < size; i++)
+	for (int i = 1; i < size; i++)
 	{
-		for (unsigned short int j = 1; i < (size - i); i++)
+		for (int j = 1; j < (size - i); j++)
 		{
 			if (set[j - 1] > set[j])
 			{
@@ -127,18 +141,19 @@ void array_::bubble_sorting()
 
 void array_::insertion_sorting()
 {
-	unsigned short int tmp;
-	unsigned short int j;
+	int tmp;
+	int j;
 	Insertion_comp = Insertion_swap = 0;
 	double temp_time = clock_t();
-	for (unsigned short int i = 1; i < size; i++)
+	for (int i = 1; i < size; i++)
 	{
 		tmp = set[i];
 		j = i - 1;
 		while ((j >= 0) && (set[j] > tmp))
 		{
 			Insertion_comp += 2;
-			set[j + 1] = set[j];	Insertion_swap++;
+			set[j + 1] = set[j];	
+			Insertion_swap++;
 			j -= 1;
 		}
 		set[j + 1] = tmp;
@@ -151,17 +166,16 @@ void array_::insertion_sorting()
 
 void array_::selection_sorting()
 {
-	unsigned short int first, temp;
-	unsigned short int numLength = size;
+	int first, temp;
 	Selection_comp = Selection_swap = 0;
 
 	double temp_time = clock_t();
-	for (unsigned short int i = numLength - 1; i > 0; i--)
+	for (int i = (size - 1); i > 0; i--)
 	{
 		first = 0;                                    // initialize to subscript of first element
-		for (unsigned short int j = 1; j <= i; j++)   // locate smallest between positions 1 and i.
+		for (int j = 1; j <= i; j++)   // locate smallest between positions 1 and i.
 		{
-			if (set[j] < set[first])
+			if (set[j] > set[first])
 			{
 				Selection_comp++;
 				first = j;
@@ -184,10 +198,10 @@ void array_::selection_sorting()
 }
 
 //:::::::::::::::::::::::::::::::::::::::::::::::::::::::: HEAP SORT :::::::::::::::::::::::::::::::::::::::::::::::::::::
-void array_::build_maxheap(unsigned short int * a, unsigned short int n)
+void array_::build_maxheap(int * a, int n)
 {
 	Heap_comp = Heap_swap = 0;
-	for (unsigned short int i = n / 2; i >= 1; i--)
+	for (int i = n / 2; i >= 1; i--)
 	{
 		max_heapify(a, i, n);
 		Heap_comp++;
@@ -195,9 +209,9 @@ void array_::build_maxheap(unsigned short int * a, unsigned short int n)
 	}
 }
 
-void array_::max_heapify(unsigned short int * a, unsigned short int i, unsigned short int n)
+void array_::max_heapify(int * a, int i, int n)
 {
-	unsigned short int j, temp;
+	int j, temp;
 	temp = a[i];
 	j = 2 * i;
 	while (j <= n)
@@ -228,12 +242,12 @@ void array_::max_heapify(unsigned short int * a, unsigned short int i, unsigned 
 	return;
 }
 
-void array_::heapsort(unsigned short int * a, unsigned short int n)
+void array_::heapsort(int * a, int n)
 {
-	unsigned short int temp;
+	int temp;
 
 	double temp_time = clock_t();
-	for (unsigned short int i = n; i >= 2; i--)
+	for (int i = n; i >= 2; i--)
 	{
 		temp = a[i];
 		a[i] = a[1];
@@ -244,7 +258,6 @@ void array_::heapsort(unsigned short int * a, unsigned short int n)
 
 	}
 	Heap_time = (clock_t() - temp_time);
-	a = backup;
 }
 
 
@@ -254,16 +267,16 @@ void array_::heapsort(unsigned short int * a, unsigned short int n)
 // Merges two subarrays of arr[].
 // First subarray is arr[l..m]
 // Second subarray is arr[m+1..r]
-void array_::merge(unsigned short int * arr, unsigned short int l, unsigned short int m, unsigned short int r)
+void array_::merge(int * arr, int l, int m, int r)
 {
-	unsigned short int i, j, k;
-	unsigned short int n1 = m - l + 1;
-	unsigned short int n2 = r - m;
+	int i, j, k;
+	int n1 = m - l + 1;
+	int n2 = r - m;
 
 	/* create temp arrays */
-	unsigned short int * L, *R;
-	L = new unsigned short int[n1];
-	R = new unsigned short int[n2];
+	int * L, *R;
+	L = new int[n1];
+	R = new int[n2];
 
 	/* Copy data to temp arrays L[] and R[] */
 	for (i = 0; i < n1; i++)
@@ -328,7 +341,7 @@ void array_::merge(unsigned short int * arr, unsigned short int l, unsigned shor
 	}
 }
 
-void array_::mergesort(unsigned short int * arr, unsigned short int l, unsigned short int r)
+void array_::mergesort(int * arr, int l, int r)
 {
 	Merge_comp = Merge_copy = 0;
 
@@ -338,7 +351,7 @@ void array_::mergesort(unsigned short int * arr, unsigned short int l, unsigned 
 		Merge_comp++;
 		// Same as (l+r)/2, but avoids overflow for
 		// large l and h
-		unsigned short int m = l + (r - l) / 2;
+		int m = l + (r - l) / 2;
 
 		// Sort first and second halves
 		mergesort(arr, l, m);
@@ -347,71 +360,70 @@ void array_::mergesort(unsigned short int * arr, unsigned short int l, unsigned 
 		merge(arr, l, m, r);
 	}
 	Merge_time = (clock_t() - temp_time);
-	arr = backup;
-
-
+	
 }
 
-//:::::::::::::::::::::::::::::::::::::::::::::::::::::::: QUICK SORT :::::::::::::::::::::::::::::::::::::::::::::::::::::
-void array_::swap(unsigned short int * a, unsigned short int * b)
-{
-	int t = *a;
-	*a = *b;
-	*b = t;
-	Quick_swap++;
-}
-
-/* This function takes last element as pivot, places
-the pivot element at its correct position in sorted
-array, and places all smaller (smaller than pivot)
-to left of pivot and all greater elements to right
-of pivot */
-int array_::partition(unsigned short int * arr, unsigned short int low, unsigned short int high)
-{
-	unsigned short int pivot = arr[high];    // pivot
-	unsigned short int i = (low - 1);  // Index of smaller element
-
-	for (int j = low; j <= high - 1; j++)
-	{
-		// If current element is smaller than or
-		// equal to pivot
-		if (arr[j] <= pivot)
-		{
-			Quick_comp++;
-			i++;    // increment index of smaller element
-			swap(&arr[i], &arr[j]);
-		}
-		Quick_comp++;
-	}
-	swap(&arr[i + 1], &arr[high]);
-	return (i + 1);
-}
-
-
-/* The main function that implements QuickSort
-arr[] --> Array to be sorted,
-low  --> Starting index,
-high  --> Ending index */
-void array_::quicksort(unsigned short int * arr, unsigned short int low, unsigned short int high)
-{
-	Quick_comp = Quick_swap = 0;
-
-	double temp_time = clock_t();
-	if (low < high)
-	{
-		Quick_comp++;
-		/* pi is partitioning index, arr[p] is now
-		at right place */
-		unsigned short int pi = partition(arr, low, high);
-
-		// Separately sort elements before
-		// partition and after partition
-		quicksort(arr, low, pi - 1);
-		quicksort(arr, pi + 1, high);
-	}
-	Quick_time = (clock_t() - temp_time);
-}
-
+//
+////:::::::::::::::::::::::::::::::::::::::::::::::::::::::: QUICK SORT :::::::::::::::::::::::::::::::::::::::::::::::::::::
+//void array_::swap(int * a, int * b)
+//{
+//	int t = *a;
+//	*a = *b;
+//	*b = t;
+//	Quick_swap++;
+//}
+//
+///* This function takes last element as pivot, places
+//the pivot element at its correct position in sorted
+//array, and places all smaller (smaller than pivot)
+//to left of pivot and all greater elements to right
+//of pivot */
+//int array_::partition(int * arr, int low, int high)
+//{
+//	int pivot = arr[high];    // pivot
+//	int i = (low - 1);  // Index of smaller element
+//
+//	for (int j = low; j <= high - 1; j++)
+//	{
+//		// If current element is smaller than or
+//		// equal to pivot
+//		if (arr[j] <= pivot)
+//		{
+//			Quick_comp++;
+//			i++;    // increment index of smaller element
+//			swap(&arr[i], &arr[j]);
+//		}
+//		Quick_comp++;
+//	}
+//	swap(&arr[i + 1], &arr[high]);
+//	return (i + 1);
+//}
+//
+//
+///* The main function that implements QuickSort
+//*arr --> Array to be sorted,
+//low  --> Starting index,
+//high  --> Ending index */
+//void array_::quicksort(int * arr, int low, int high)
+//{
+//	Quick_comp = Quick_swap = 0;
+//
+//	double temp_time = clock_t();
+//	if (low < high)
+//	{
+//		Quick_comp++;
+//		/* pi is partitioning index, arr[p] is now
+//		at right place */
+//		int pi = partition(arr, low, high);
+//
+//		// Separately sort elements before
+//		// partition and after partition
+//		quicksort(arr, low, pi - 1);
+//		quicksort(arr, pi + 1, high);
+//	}
+//	Quick_time = (clock_t() - temp_time);
+//}
+//
 void array_::sort_array()
 {
 	ofstream file("Results.txt", ofstream::in);
@@ -419,32 +431,90 @@ void array_::sort_array()
 		"Insertion time\tInsertion swaps\tInsertion comparisons\t"
 		"Selection time\tSelection swaps\tSelection comparisons\t"
 		"Heap time\tHeap swaps\tHeap comparisons"
-		"Merge time\tMerge swaps\tMerge comparisons"
-		"Quick time\tQuick swaps\tQuick comparisons";
+		"Merge time\tMerge swaps\tMerge comparisons";
+		//"Quick time\tQuick swaps\tQuick comparisons";
 	file << endl;
 		
-	for (unsigned short int i = 10; i <= 1000; i++)
+	for (int i = 10; i <= 1000; i++)
 	{
 		set_size(i);
 		create_array(i);
 		bubble_sorting();
 		insertion_sorting();
 		selection_sorting();
+		build_maxheap(set, size);
 		heapsort(set, size);
 		mergesort(set, 0, (size - 1));
-		quicksort(set, 0, (size - 1));
+		//quicksort(set, 0, (size - 1));
 
-		file << size << "\t" << Bubble_time << "            \t" << Bubble_swap << "                  \t" << Bubble_comp
-			<< "\t" << Insertion_time << "\t" << Insertion_swap << "\t" << Insertion_comp
-			<< "\t" << Selection_time << "\t" << Selection_swap << "\t" << Selection_comp
-			<< "\t" << Heap_time << "\t" << Heap_swap << "\t" << Heap_comp
-			<< "\t" << Merge_time << "\t" << Merge_copy << "\t" << Merge_comp
-			<< "\t" << Quick_time << "\t" << Quick_swap << "\t" << Quick_comp << endl;
+		file << size << "\t" << Bubble_time << "            \t" << Bubble_swap << "                  " << Bubble_comp
+			<< "\t\t" << Insertion_time << "\t\t" << Insertion_swap << "\t\t" << Insertion_comp
+			<< "\t\t" << Selection_time << "\t\t" << Selection_swap << "\t\t" << Selection_comp
+			<< "\t\t" << Heap_time << "\t\t" << Heap_swap << "\t\t" << Heap_comp
+			<< "\t\t" << Merge_time << "\t\t" << Merge_copy << "\t\t" << Merge_comp;
+		B_Sum = Bubble_comp + Bubble_swap;
+		I_Sum = Insertion_comp + Insertion_swap;
+		S_Sum = Selection_comp + Selection_swap;
+		M_Sum = Merge_comp + Merge_copy;
+		H_Sum = Heap_comp + Heap_swap;
+		int Sum[] = { B_Sum,I_Sum,S_Sum ,M_Sum ,H_Sum };
+		int min;
+		for (int i = 0; i < 5; i++)
+		{
+			min = Sum[i];
+			if (Sum[i] < min)
+				min = Sum[i];
+		}
+		if (min == B_Sum)
+			file << "Bubble Sort" << endl;
+
+		else if (min == I_Sum)
+			file << "Insertion Sort" << endl;
+
+		else if (min == S_Sum)
+			file << "Selection Sort" << endl;
+
+		else if (min == M_Sum)
+			file << "Merge Sort" << endl;
+
+		else if (min == H_Sum)
+			file << "Heap Sort" << endl;
+			//<< "\t" << Quick_time << "\t" << Quick_swap << "\t" << Quick_comp << endl;
 	}
 
 }
 
+void array_::minimum()
+{
+	ofstream file;
+	B_Sum = Bubble_comp + Bubble_swap;
+	I_Sum = Insertion_comp + Insertion_swap;
+	S_Sum = Selection_comp + Selection_swap;
+	M_Sum = Merge_comp + Merge_copy;
+	H_Sum = Heap_comp + Heap_swap;
+	int Sum[] = { B_Sum,I_Sum,S_Sum ,M_Sum ,H_Sum };
+	int min;
+	for (int i = 0; i < 5; i++)
+	{
+		min = Sum[i];
+		if (Sum[i] < min)
+			min = Sum[i];
+	}
+	if (min == B_Sum)
+		file << "\tBubble Sort" << endl;
 
+	else if (min == I_Sum)
+		file << "\tInsertion Sort" << endl;
+
+	else if (min == S_Sum)
+		file << "\tSelection Sort" << endl;
+
+	else if (min == M_Sum)
+		file << "\tMerge Sort" << endl;
+
+	else if (min == H_Sum)
+		file << "\tHeap Sort" << endl;
+}
 
 int main()
 {
