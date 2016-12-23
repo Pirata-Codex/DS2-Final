@@ -69,7 +69,7 @@ public:
 
 	//Quick sort functions
 	void swap(unsigned short int *, unsigned short int *);
-	int partition(unsigned short int arr[], unsigned short int low, unsigned short int high);
+	int partition(unsigned short int *, unsigned short int , unsigned short int );
 	void quicksort(unsigned short int *, unsigned short int, unsigned short int);
 	//:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -80,6 +80,7 @@ public:
 void array_::create_array(unsigned short int size)
 {
 	srand(time(NULL));
+	set = new unsigned short int[size];
 	unsigned short int random; //The generated integer will be saved in this
 	for (unsigned short int i = 0; i < size; i++)
 	{
@@ -203,7 +204,7 @@ void array_::max_heapify(unsigned short int * a, unsigned short int i, unsigned 
 	{
 		if (j < n && a[j + 1] > a[j])
 		{
-			Heap_comp++;
+			Heap_comp += 2;
 			j = j + 1;
 		}
 		
@@ -243,6 +244,7 @@ void array_::heapsort(unsigned short int * a, unsigned short int n)
 
 	}
 	Heap_time = (clock_t() - temp_time);
+	a = backup;
 }
 
 
@@ -300,7 +302,7 @@ void array_::merge(unsigned short int * arr, unsigned short int l, unsigned shor
 			j++;
 		}
 		k++;
-		Merge_comp++;
+		Merge_comp += 2;
 	}
 
 	/* Copy the remaining elements of L[], if there
@@ -311,6 +313,7 @@ void array_::merge(unsigned short int * arr, unsigned short int l, unsigned shor
 		Merge_copy++;
 		i++;
 		k++;
+		Merge_comp++;
 	}
 
 	/* Copy the remaining elements of R[], if there
@@ -321,12 +324,15 @@ void array_::merge(unsigned short int * arr, unsigned short int l, unsigned shor
 		Merge_copy++;
 		j++;
 		k++;
+		Merge_comp++;
 	}
 }
 
 void array_::mergesort(unsigned short int * arr, unsigned short int l, unsigned short int r)
 {
 	Merge_comp = Merge_copy = 0;
+
+	double temp_time = clock_t();
 	if (l < r)
 	{
 		Merge_comp++;
@@ -340,6 +346,9 @@ void array_::mergesort(unsigned short int * arr, unsigned short int l, unsigned 
 
 		merge(arr, l, m, r);
 	}
+	Merge_time = (clock_t() - temp_time);
+	arr = backup;
+
 
 }
 
@@ -357,7 +366,7 @@ the pivot element at its correct position in sorted
 array, and places all smaller (smaller than pivot)
 to left of pivot and all greater elements to right
 of pivot */
-int array_::partition(unsigned short int arr[], unsigned short int low, unsigned short int high)
+int array_::partition(unsigned short int * arr, unsigned short int low, unsigned short int high)
 {
 	unsigned short int pivot = arr[high];    // pivot
 	unsigned short int i = (low - 1);  // Index of smaller element
@@ -405,7 +414,33 @@ void array_::quicksort(unsigned short int * arr, unsigned short int low, unsigne
 
 void array_::sort_array()
 {
-	create_array(size);
+	ofstream file("Results.txt", ofstream::in);
+	file << "Size\tBubble time\tBubble swaps\tBubble comparisons\t"
+		"Insertion time\tInsertion swaps\tInsertion comparisons\t"
+		"Selection time\tSelection swaps\tSelection comparisons\t"
+		"Heap time\tHeap swaps\tHeap comparisons"
+		"Merge time\tMerge swaps\tMerge comparisons"
+		"Quick time\tQuick swaps\tQuick comparisons";
+	file << endl;
+		
+	for (unsigned short int i = 10; i <= 1000; i++)
+	{
+		set_size(i);
+		create_array(i);
+		bubble_sorting();
+		insertion_sorting();
+		selection_sorting();
+		heapsort(set, size);
+		mergesort(set, 0, (size - 1));
+		quicksort(set, 0, (size - 1));
+
+		file << size << "\t" << Bubble_time << "            \t" << Bubble_swap << "                  \t" << Bubble_comp
+			<< "\t" << Insertion_time << "\t" << Insertion_swap << "\t" << Insertion_comp
+			<< "\t" << Selection_time << "\t" << Selection_swap << "\t" << Selection_comp
+			<< "\t" << Heap_time << "\t" << Heap_swap << "\t" << Heap_comp
+			<< "\t" << Merge_time << "\t" << Merge_copy << "\t" << Merge_comp
+			<< "\t" << Quick_time << "\t" << Quick_swap << "\t" << Quick_comp << endl;
+	}
 
 }
 
@@ -413,5 +448,7 @@ void array_::sort_array()
 
 int main()
 {
-
+	array_ a;
+	a.sort_array();
+	return 0;
 }
