@@ -459,26 +459,27 @@ void array_::sort_array()
 		H_Sum = Heap_comp + Heap_swap;
 		int Sum[] = { B_Sum,I_Sum,S_Sum ,M_Sum ,H_Sum };
 		int min;
-		for (int i = 0; i < 5; i++)
+		min = Sum[0];
+		for (int k = 1; k < 5; k++)
 		{
-			min = Sum[i];
-			if (Sum[i] < min)
-				min = Sum[i];
+			
+			if (Sum[k] < min)
+				min = Sum[k];
 		}
 		if (min == B_Sum)
-			file << "Bubble Sort" << endl;
+			file << "\tBubble Sort" << endl;
 
 		else if (min == I_Sum)
-			file << "Insertion Sort" << endl;
+			file << "\tInsertion Sort" << endl;
 
 		else if (min == S_Sum)
-			file << "Selection Sort" << endl;
+			file << "\tSelection Sort" << endl;
 
 		else if (min == M_Sum)
-			file << "Merge Sort" << endl;
+			file << "\tMerge Sort" << endl;
 
 		else if (min == H_Sum)
-			file << "Heap Sort" << endl;
+			file << "\tHeap Sort" << endl;
 			//<< "\t" << Quick_time << "\t" << Quick_swap << "\t" << Quick_comp << endl;
 	}
 
